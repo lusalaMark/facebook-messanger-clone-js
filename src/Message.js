@@ -6,8 +6,8 @@ function Message({message, username}) {
     
     const isUser = username === message.username;
     return (
-        <div className = {`message $ {isUser && 'message_user'}`}>
-            <Card className={isUser ? "message_userCard" : "message_guestCard"}>
+        <div className = {`message $ {isUser && 'message__user'}`}>
+            <Card className  ={isUser ? "message__userCard" : "message__guestCard"}>
                 <CardContent>
                     <Typography
                         color= "white"
