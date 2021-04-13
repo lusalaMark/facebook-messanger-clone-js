@@ -7,14 +7,13 @@
 .message__user {
   margin-left: auto;
   color: white;
-  text-align: right;
-}
-
-.message__userCard {
-  background-color: #0b81fd !important;
-  text-align: right;
+  text-align: left !important;
 }
 
 .message__guestCard {
   background-color: #e9e9eb !important;
+}
+
+.message__userCard {
+  background-color: #0b81fd !important;
 }

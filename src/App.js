@@ -1,15 +1,25 @@
 import React, { useEffect, useState } from "react";
-import { Button, FormControl, InputLabel, Input } from "@material-ui/core";
+import { Button, InputLabel, Input, FormControl } from "@material-ui/core";
 import "./App.css";
 import Message from "./Message";
+import db from "./firebase";
+import firebase from "firebase";
+import Flipmove from "react-flip-move";
 
 function App() {
-  const [input, setinput] = useState("");
-  const [messages, setMessages] = useState([
-    { username: "Mark", text: "I am happy with react" },
-    { username: "Shammah", text: "I am happy codding" },
-  ]);
+  const [input, setInput] = useState("");
+  const [messages, setMessages] = useState([]);
   const [username, setUsername] = useState("");
+
+  useEffect(() => {
+    db.collection("messages")
+      .orderBy("timestamp", "desc")
+      .onSnapshot((snapshot) => {
+        setMessages(
+          snapshot.docs.map((doc) => ({ id: doc.id, message: doc.data() }))
+        );
+      });
+  }, []);
 
   useEffect(() => {
     //prompt ('Please enter your name... ')
@@ -17,21 +27,24 @@ function App() {
   }, []);
 
   const sendMessage = (event) => {
-    // All the logic to send the message goes here
     event.preventDefault();
-    setMessages([...messages, { username: username, text: input }]);
-    setinput("");
+    db.collection("messages").add({
+      message: input,
+      username: username,
+      timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+    });
+
+    setInput("");
   };
   return (
     <div className="App">
-      <h1>Hello There am clean</h1>
       <h2>Welcome {username}</h2>
       <form>
         <FormControl>
-          <InputLabel>Enter a message..</InputLabel>
+          <InputLabel>Enter a message...</InputLabel>
           <Input
             value={input}
-            onChange={(event) => setinput(event.target.value)}
+            onChange={(event) => setInput(event.target.value)}
           />
           <Button
             disabled={!input}
@@ -40,13 +53,15 @@ function App() {
             type="submit"
             onClick={sendMessage}
           >
-            Send Message{" "}
+            Send Message
           </Button>
         </FormControl>
       </form>
-      {messages.map((message) => (
-        <Message username={username} message={message} />
-      ))}
+      <Flipmove>
+        {messages.map(({ id, message }) => (
+          <Message key={id} username={username} message={message} />
+        ))}
+      </Flipmove>
     </div>
   );
 }
